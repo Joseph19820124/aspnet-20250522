@@ -1,0 +1,77 @@
+### ASP.NET Core Todo List API测试文件
+### 在VS Code中安装REST Client扩展后可以直接运行这些请求
+
+# 设置变量
+@baseUrl = https://localhost:7000
+@contentType = application/json
+
+### 获取所有Todo项目
+GET {{baseUrl}}/api/todo
+Accept: {{contentType}}
+
+### 创建新的Todo项目
+POST {{baseUrl}}/api/todo
+Content-Type: {{contentType}}
+
+{
+  "title": "学习ASP.NET Core",
+  "description": "完成Todo List应用开发"
+}
+
+### 创建另一个Todo项目
+POST {{baseUrl}}/api/todo
+Content-Type: {{contentType}}
+
+{
+  "title": "配置Supabase数据库",
+  "description": "设置PostgreSQL连接和表结构"
+}
+
+### 获取特定Todo项目（需要替换{id}为实际ID）
+GET {{baseUrl}}/api/todo/1
+Accept: {{contentType}}
+
+### 更新Todo项目（需要替换{id}为实际ID）
+PUT {{baseUrl}}/api/todo/1
+Content-Type: {{contentType}}
+
+{
+  "title": "学习ASP.NET Core - 已更新",
+  "description": "完成Todo List应用开发和部署",
+  "isCompleted": true
+}
+
+### 切换Todo项目完成状态（需要替换{id}为实际ID）
+PATCH {{baseUrl}}/api/todo/1/toggle
+Content-Type: {{contentType}}
+
+### 删除Todo项目（需要替换{id}为实际ID）
+DELETE {{baseUrl}}/api/todo/2
+
+### 测试错误处理 - 获取不存在的Todo项目
+GET {{baseUrl}}/api/todo/999
+Accept: {{contentType}}
+
+### 测试验证 - 创建空标题的Todo项目
+POST {{baseUrl}}/api/todo
+Content-Type: {{contentType}}
+
+{
+  "title": "",
+  "description": "这应该失败"
+}
+
+### 测试长标题验证
+POST {{baseUrl}}/api/todo
+Content-Type: {{contentType}}
+
+{
+  "title": "这是一个非常长的标题，用来测试最大长度限制，看看系统是否会正确处理超过200个字符的标题，这个标题应该会被拒绝因为它超过了我们设定的最大长度限制，我们需要确保验证功能正常工作，这样可以防止数据库错误和保持数据完整性",
+  "description": "测试标题长度限制"
+}
+
+### 健康检查（如果实现了）
+GET {{baseUrl}}/health
+
+### 获取API文档
+GET {{baseUrl}}/swagger/index.html

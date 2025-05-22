@@ -1,0 +1,61 @@
+name: Deploy to Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build and publish
+      run: |
+        dotnet publish -c Release -o ./publish
+        tar -czf release.tar.gz -C ./publish .
+    
+    - name: Deploy to server
+      run: |
+        echo "Deploying to ${{ github.event.inputs.environment || 'production' }}..."
+        # 这里添加实际的部署脚本
+        # 例如:
+        # scp release.tar.gz user@server:/path/to/app/
+        # ssh user@server 'cd /path/to/app && tar -xzf release.tar.gz && systemctl restart todoapp'
+    
+    - name: Health check
+      run: |
+        echo "Running health check..."
+        # 这里添加健康检查
+        # curl -f https://your-app-url/health || exit 1
+    
+    - name: Notification
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Deployment successful!"
+        else
+          echo "❌ Deployment failed!"
+        fi
+        # 这里可以添加通知逻辑
+        # 例如发送Slack消息或邮件
